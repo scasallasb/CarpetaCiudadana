@@ -1,0 +1,263 @@
+PLANTUML - FLUJO DE MICROSERVICIOS CARPETA CIUDADANA
+====================================================
+
+@startuml
+!theme plain
+title Flujo de Microservicios - Carpeta Ciudadana
+
+actor Cliente
+participant "Kong API Gateway" as Kong
+participant "MiCarpeta\n(Operador)" as MiCarpeta
+participant "Registraduría" as Registraduria
+participant "Notificador" as Notificador
+participant "Kafka" as Kafka
+
+== Flujo Principal: Registro de Ciudadano ==
+
+Cliente -> Kong: 1. POST /registraduria/api/v1/identidad/verify
+Kong -> Registraduria: Verificar identidad
+Registraduria -> Kong: {"verificado": true}
+Kong -> Cliente: Respuesta verificación
+
+Cliente -> Kong: 2. POST /micarpeta/api/v1/carpeta/{id}
+Kong -> MiCarpeta: Crear carpeta
+MiCarpeta -> MiCarpeta: Almacenar carpeta
+MiCarpeta -> Kafka: Evento: "ciudadano-registrado"
+Kafka -> Registraduria: Consumir evento
+MiCarpeta -> Kong: {"Carpeta": {...}}
+Kong -> Cliente: Carpeta creada
+
+Cliente -> Kong: 3. POST /micarpeta/api/v1/notificaciones/minTIC
+Kong -> MiCarpeta: Notificar a MinTIC
+MiCarpeta -> MiCarpeta: Simular notificación a MinTIC
+MiCarpeta -> Kong: {"status": "enviado-a-mintic"}
+Kong -> Cliente: MinTIC notificado (simulado)
+
+Cliente -> Kong: 4. POST /registraduria/api/v1/documento/upload
+Kong -> Registraduria: Simular FTP
+Registraduria -> Kong: {"subida": true}
+Kong -> Cliente: FTP simulado
+
+Cliente -> Kong: 5. POST /micarpeta/api/v1/documento
+Kong -> MiCarpeta: Registrar documento
+MiCarpeta -> MiCarpeta: Almacenar documento
+MiCarpeta -> Kong: {"Documento": {...}}
+Kong -> Cliente: Documento registrado
+
+Cliente -> Kong: 6. POST /micarpeta/api/v1/notificaciones/usuario
+Kong -> MiCarpeta: Notificar usuario
+MiCarpeta -> Kong: HTTP POST /notificador/api/v1/email
+Kong -> Notificador: Enviar email
+Notificador -> Kong: Email enviado
+Kong -> MiCarpeta: Respuesta Notificador
+MiCarpeta -> Kong: {"status": "notificado-usuario"}
+Kong -> Cliente: Usuario notificado
+
+== Flujo Asíncrono con Kafka ==
+
+note over Registraduria: Procesa evento "ciudadano-registrado"
+Registraduria -> Registraduria: Verificar identidad
+Registraduria -> Registraduria: Firmar documento
+Registraduria -> Kafka: Evento: "documento-firmado"
+
+note over Notificador: Consume evento "documento-firmado"
+Kafka -> Notificador: Documento firmado
+Notificador -> Kong: HTTP POST /mintic/api/v1/ciudadanos
+Kong -> Mintic: Notificar MinTIC
+Notificador -> Notificador: Enviar email al ciudadano
+
+== Verificaciones ==
+
+Cliente -> Kong: GET /micarpeta/api/v1/ciudadano/{id}/carpeta
+Kong -> MiCarpeta: Consultar carpeta
+MiCarpeta -> Kong: {"Carpeta": {...}}
+Kong -> Cliente: Carpeta del ciudadano
+
+Cliente -> Kong: GET /micarpeta/api/v1/carpeta/{id}/documentos
+Kong -> MiCarpeta: Consultar documentos
+MiCarpeta -> Kong: {"Documentos": [...]}
+Kong -> Cliente: Documentos de la carpeta
+
+@enduml
+
+MERMAID - FLUJO DE MICROSERVICIOS CARPETA CIUDADANA
+===================================================
+
+sequenceDiagram
+    participant C as Cliente
+    participant K as Kong API Gateway
+    participant MC as MiCarpeta
+    participant R as Registraduría
+    participant M as MinTIC
+    participant N as Notificador
+    participant KF as Kafka
+
+    Note over C,N: Flujo Principal: Registro de Ciudadano
+
+    C->>K: 1. POST /registraduria/api/v1/identidad/verify
+    K->>R: Verificar identidad
+    R->>K: {"verificado": true}
+    K->>C: Respuesta verificación
+
+    C->>K: 2. POST /micarpeta/api/v1/carpeta/{id}
+    K->>MC: Crear carpeta
+    MC->>MC: Almacenar carpeta
+    MC->>KF: Evento: "ciudadano-registrado"
+    KF->>R: Consumir evento
+    MC->>K: {"Carpeta": {...}}
+    K->>C: Carpeta creada
+
+    C->>K: 3. POST /micarpeta/api/v1/notificaciones/minTIC
+    K->>MC: Notificar a MinTIC
+    MC->>K: HTTP POST /mintic/api/v1/ciudadanos
+    K->>M: Registrar ciudadano
+    M->>K: Ciudadano registrado
+    K->>MC: Respuesta MinTIC
+    MC->>K: {"status": "enviado-a-mintic"}
+    K->>C: Notificación enviada
+
+    C->>K: 4. POST /registraduria/api/v1/ftp/simular-upload
+    K->>R: Simular FTP
+    R->>K: {"subida": true}
+    K->>C: FTP simulado
+
+    C->>K: 5. POST /micarpeta/api/v1/documento
+    K->>MC: Registrar documento
+    MC->>MC: Almacenar documento
+    MC->>K: {"Documento": {...}}
+    K->>C: Documento registrado
+
+    C->>K: 6. POST /micarpeta/api/v1/notificaciones/usuario
+    K->>MC: Notificar usuario
+    MC->>K: HTTP POST /notificador/api/v1/email
+    K->>N: Enviar email
+    N->>K: Email enviado
+    K->>MC: Respuesta Notificador
+    MC->>K: {"status": "notificado-usuario"}
+    K->>C: Usuario notificado
+
+    Note over R,N: Flujo Asíncrono con Kafka
+
+    Note over R: Procesa evento "ciudadano-registrado"
+    R->>R: Verificar identidad
+    R->>R: Firmar documento
+    R->>KF: Evento: "documento-firmado"
+
+    Note over N: Consume evento "documento-firmado"
+    KF->>N: Documento firmado
+    N->>K: HTTP POST /mintic/api/v1/ciudadanos
+    K->>M: Notificar MinTIC
+    N->>N: Enviar email al ciudadano
+
+    Note over C,MC: Verificaciones
+
+    C->>K: GET /micarpeta/api/v1/ciudadano/{id}/carpeta
+    K->>MC: Consultar carpeta
+    MC->>K: {"Carpeta": {...}}
+    K->>C: Carpeta del ciudadano
+
+    C->>K: GET /micarpeta/api/v1/carpeta/{id}/documentos
+    K->>MC: Consultar documentos
+    MC->>K: {"Documentos": [...]}
+    K->>C: Documentos de la carpeta
+
+DIAGRAMA DE ARQUITECTURA - PLANTUML
+===================================
+
+@startuml
+!theme plain
+title Arquitectura de Microservicios - Carpeta Ciudadana
+
+package "Cliente" {
+  [Usuario]
+}
+
+package "API Gateway" {
+  [Kong]
+  database "PostgreSQL" {
+    [Config Kong]
+  }
+}
+
+package "Microservicios" {
+  [MiCarpeta\nPuerto 3000] as MC
+  [Registraduría\nPuerto 3001] as R
+  [MinTIC\nPuerto 3002] as M
+  [Notificador\nPuerto 3003] as N
+}
+
+package "Infraestructura" {
+  [Kafka\nPuerto 29092] as KF
+  [Zookeeper\nPuerto 2181] as ZK
+}
+
+[Usuario] --> [Kong] : HTTP/HTTPS
+[Kong] --> [MC] : /micarpeta/*
+[Kong] --> [R] : /registraduria/*
+[Kong] --> [M] : /mintic/*
+[Kong] --> [N] : /notificador/*
+
+[MC] --> [KF] : Eventos Kafka
+[R] --> [KF] : Eventos Kafka
+[N] --> [KF] : Eventos Kafka
+
+[KF] --> [ZK] : Coordinación
+
+[MC] --> [M] : HTTP (Notificaciones)
+[MC] --> [N] : HTTP (Notificaciones)
+
+[Kong] --> [Config Kong] : Configuración
+
+note right of [MC]
+  - Operador principal
+  - Gestión de carpetas
+  - Gestión de documentos
+  - Notificaciones
+end note
+
+note right of [R]
+  - Verificación identidad
+  - Firma de documentos
+  - Simulación FTP
+end note
+
+note right of [M]
+  - Registro ciudadanos
+  - Alta operadores
+end note
+
+note right of [N]
+  - Envío emails
+  - Notificaciones
+end note
+
+@enduml
+
+DIAGRAMA DE FLUJO DE DATOS - PLANTUML
+=====================================
+
+@startuml
+!theme plain
+title Flujo de Datos - Carpeta Ciudadana
+
+start
+
+:Cliente solicita verificación;
+:Registraduría verifica identidad;
+:Cliente crea carpeta en MiCarpeta;
+:MiCarpeta envía evento a Kafka;
+:Registraduría consume evento;
+:Cliente notifica a MinTIC;
+:MiCarpeta llama a MinTIC;
+:Cliente simula FTP;
+:Cliente registra documento;
+:Cliente notifica usuario;
+:MiCarpeta llama a Notificador;
+:Registraduría procesa evento;
+:Registraduría envía evento firmado;
+:Notificador consume evento;
+:Notificador envía notificaciones;
+
+stop
+
+@enduml

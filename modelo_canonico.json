@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/carpeta-ciudadana.schema.json",
+  "title": "Modelo Canonico Carpeta Ciudadana",
+  "type": "object",
+  "properties": {
+    "Ciudadano": {
+      "type": "object",
+      "required": ["id", "nombre", "correoCarpeta", "operadorId"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 36 },
+        "nombre": { "type": "string", "maxLength": 100 },
+        "correoCarpeta": { "type": "string", "format": "email", "maxLength": 100 },
+        "operadorId": { "type": "string", "maxLength": 36 }
+      }
+    },
+    "Carpeta": {
+      "type": "object",
+      "required": ["id", "ciudadanoId", "fechaCreacion"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 36 },
+        "ciudadanoId": { "type": "string", "maxLength": 36 },
+        "fechaCreacion": { "type": "string", "format": "date" },
+        "documentos": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Documento" }
+        }
+      }
+    },
+    "Operador": {
+      "type": "object",
+      "required": ["id", "nombre", "tipo"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 36 },
+        "nombre": { "type": "string", "maxLength": 100 },
+        "tipo": { "type": "string", "enum": ["publico", "privado"] }
+      }
+    },
+    "EntidadEmisora": {
+      "type": "object",
+      "required": ["id", "nombre", "sector"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 36 },
+        "nombre": { "type": "string", "maxLength": 100 },
+        "sector": { "type": "string", "maxLength": 50 }
+      }
+    },
+    "Solicitud": {
+      "type": "object",
+      "required": ["id", "ciudadanoId", "documentosSolicitados", "estado"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 36 },
+        "ciudadanoId": { "type": "string", "maxLength": 36 },
+        "documentosSolicitados": {
+          "type": "array",
+          "items": { "type": "string", "maxLength": 36 }
+        },
+        "estado": { "type": "string", "enum": ["pendiente", "completada"] }
+      }
+    },
+    "Notificacion": {
+      "type": "object",
+      "required": ["id", "tipo", "destinatario", "mensaje"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 36 },
+        "tipo": { "type": "string", "enum": ["email", "sms", "none"] },
+        "destinatario": { "type": "string", "maxLength": 100 },
+        "mensaje": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "Respuesta": {
+      "properties": {
+		"id": { "type": "string", "maxLength": 36 },
+        "mensaje": { "type": "string", "maxLength": 500 }
+      }
+    }
+  },
+  "$defs": {
+    "Documento": {
+      "type": "object",
+      "required": ["id", "tipo", "estado", "fechaEmision", "entidadEmisoraId"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 36 },
+        "tipo": { "type": "string", "maxLength": 50 },
+        "estado": { "type": "string", "enum": ["certificado", "temporal"] },
+        "fechaEmision": { "type": "string", "format": "date" },
+        "entidadEmisoraId": { "type": "string", "maxLength": 36 },
+        "URL": { "type": "string", "maxLength": 1000 },
+        "metadatos": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Metadato" }
+        },
+        "firmaDigital": {
+          "$ref": "#/$defs/FirmaDigital"
+        }
+      }
+    },
+    "Metadato": {
+      "type": "object",
+      "required": ["clave", "valor"],
+      "properties": {
+        "clave": { "type": "string", "maxLength": 50 },
+        "valor": { "type": "string", "maxLength": 255 }
+      }
+    },
+    "FirmaDigital": {
+      "type": "object",
+      "required": ["algoritmo", "valor", "fechaFirma", "firmante", "certificado"],
+      "properties": {
+        "algoritmo": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "valor": {
+          "type": "string",
+          "description": "Firma codificada (ej. base64)"
+        },
+        "fechaFirma": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "firmante": {
+          "type": "object",
+          "required": ["id", "nombre"],
+          "properties": {
+            "id": { "type": "string", "maxLength": 36 },
+            "nombre": { "type": "string", "maxLength": 100 },
+            "cargo": { "type": "string", "maxLength": 100 }
+          }
+        },
+        "certificado": {
+          "type": "object",
+          "required": ["emisor", "numeroSerie", "validoDesde", "validoHasta"],
+          "properties": {
+            "emisor": { "type": "string", "maxLength": 100 },
+            "numeroSerie": { "type": "string", "maxLength": 50 },
+            "validoDesde": { "type": "string", "format": "date-time" },
+            "validoHasta": { "type": "string", "format": "date-time" }
+          }
+        }
+      }
+    }
+  },
+  "required": ["Ciudadano", "Carpeta"]
+}

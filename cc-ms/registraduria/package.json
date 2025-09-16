@@ -1,0 +1,21 @@
+{
+  "name": "registraduria",
+  "version": "1.0.0",
+  "description": "Modelo can\u00f3nico para interoperabilidad de servicios ciudadanos",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "swagger"
+  ],
+  "license": "Unlicense",
+  "private": true,
+  "dependencies": {
+    "express": "^4.18.2",
+    "morgan": "^1.10.0",
+    "cors": "^2.8.5",
+    "kafkajs": "^2.2.4",
+    "axios": "^1.6.0"
+  }
+}

@@ -1,0 +1,674 @@
+openapi: 3.0.4
+info:
+  title: Carpeta Ciudadana
+  description: Modelo canónico para interoperabilidad de servicios ciudadanos
+  contact:
+    email: grupo2-arti4212@uniandes.edu.co
+  version: 1.0.0
+servers:
+- url: https://grupo2-arti4212-uniandes.io/api/v1
+tags:
+- name: ciudadano
+  description: Operaciones acerca de un ciudadano
+- name: carpeta
+  description: Operaciones sobre las carpetas de los ciudadanos.
+- name: documento
+  description: Documentos asociados a los ciudadanos.
+- name: operador
+  description: Entidad a la que un ciudadano se puede registrar.
+paths:
+  /ciudadano/listar:
+    get:
+      tags:
+      - ciudadano
+      summary: Listar ciudadanos
+      description: Lista de ciudadanos
+      operationId: ciudadanoLista
+      responses:
+        "200":
+          description: Operacion Exitosa
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ciudadano"
+                x-content-type: application/json
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      x-swagger-router-controller: Ciudadano
+  /ciudadano/{id}/carpeta:
+    get:
+      tags:
+      - ciudadano
+      summary: Obtener la carpeta de un ciudadano
+      operationId: ciudadanoIdCarpetaGET
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maxLength: 36
+          type: string
+      responses:
+        "200":
+          description: Carpeta encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Carpeta"
+      x-swagger-router-controller: Ciudadano
+  /carpeta/{id}:
+    get:
+      tags:
+      - carpeta
+      summary: Buscar carpeta por su ID
+      description: Retorna un carpeta basado en un ID.
+      operationId: getCarpetaId
+      parameters:
+      - name: id
+        in: path
+        description: ID de la carpeta a retornar
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Carpeta encontrada
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Carpeta"
+                x-content-type: application/json
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      x-swagger-router-controller: Carpeta
+    put:
+      tags:
+      - carpeta
+      summary: Actualizar una carpeta existente.
+      description: Actulizar una carpeta existente por su ID
+      operationId: updateCarpeta
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maxLength: 36
+          type: string
+      requestBody:
+        description: Actulizar una carpeta existente por su ID
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Carpeta"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/Carpeta"
+        required: true
+      responses:
+        "200":
+          description: Operacion exitosa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Carpeta"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Carpeta"
+        "400":
+          description: ID invalido
+        "404":
+          description: Carpeta no encontrada
+        "422":
+          description: Error en la validacion
+        default:
+          description: Error inesperado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+      - carpeta_ciudadana_auth:
+        - write:carpetas
+        - read:carpetas
+      x-swagger-router-controller: Carpeta
+    post:
+      tags:
+      - carpeta
+      summary: Agrega una carpeta
+      description: Agrega una carpeta
+      operationId: addCarpeta
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maxLength: 36
+          type: string
+      requestBody:
+        description: Crea una nueva carpeta al ciudadano
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Carpeta"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/Carpeta"
+        required: true
+      responses:
+        "200":
+          description: Operacion exitosa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Carpeta"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Carpeta"
+        "400":
+          description: Informacion incorrecta
+        "422":
+          description: Error en la validacion
+        default:
+          description: Error inesperado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+      - carpeta_ciudadana_auth:
+        - write:carpetas
+        - read:carpetas
+      x-swagger-router-controller: Carpeta
+  /carpeta/{id}/documentos:
+    get:
+      tags:
+      - carpeta
+      summary: Listar documentos de una carpeta
+      operationId: carpetaIdDocumentosGET
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maxLength: 36
+          type: string
+      responses:
+        "200":
+          description: Lista de documentos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Documento"
+                x-content-type: application/json
+      x-swagger-router-controller: Carpeta
+  /documento:
+    post:
+      tags:
+      - documento
+      summary: Registrar documento
+      operationId: documentoPOST
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Documento"
+        required: true
+      responses:
+        "201":
+          description: Documento creado
+      x-swagger-router-controller: Documento
+  /documento/solicitar-firma:
+    post:
+      tags:
+      - documento
+      summary: Solicitar firma de documento
+      operationId: documentoSolicitarFirmaPOST
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Solicitud:
+                  $ref: "#/components/schemas/Solicitud"
+                Notificacion:
+                  $ref: "#/components/schemas/Notificacion"
+              required:
+                - Solicitud
+                - Notificacion
+        required: true
+      responses:
+        "201":
+          description: Solicitud procesada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Solicitud:
+                    $ref: "#/components/schemas/Solicitud"
+                  Notificacion:
+                    $ref: "#/components/schemas/Notificacion"
+      x-swagger-router-controller: Documento
+  /operador/{id}/ciudadanos:
+    get:
+      tags:
+      - operador
+      summary: Listar ciudadanos afiliados a un operador
+      operationId: operadorIdCiudadanosGET
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maxLength: 36
+          type: string
+      responses:
+        "200":
+          description: Lista de ciudadanos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ciudadano"
+                x-content-type: application/json
+      x-swagger-router-controller: Operador
+components:
+  schemas:
+    Ciudadano:
+      required:
+      - correoCarpeta
+      - id
+      - nombre
+      - operadorId
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          type: string
+        nombre:
+          maxLength: 100
+          type: string
+        correoCarpeta:
+          maxLength: 100
+          type: string
+          format: email
+        operadorId:
+          maxLength: 36
+          type: string
+      example:
+        correoCarpeta: ""
+        id: id
+        nombre: nombre
+        operadorId: operadorId
+    Solicitud:
+      required:
+      - id
+      - ciudadanoId
+      - documentosSolicitados
+      - estado
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          type: string
+        ciudadanoId:
+          maxLength: 36
+          type: string
+        documentosSolicitados:
+          type: array
+          items:
+            type: string
+        estado:
+          type: string
+          enum: ["pendiente", "Completada"]
+      example:
+        id: "sol-789"
+        ciudadanoId: "f9e8d7c6-b5a4-3210-9876-543210fe4567"
+        documentosSolicitados: ["CC1234567890"]
+        estado: "pendiente"
+    Notificacion:
+      required:
+      - tipo
+      - destinatario
+      - mensaje
+      type: object
+      properties:
+        tipo:
+          type: string
+          enum: ["sms", "email"]
+        destinatario:
+          type: string
+        mensaje:
+          type: string
+        correoCarpeta:
+          type: string
+          format: email
+      example:
+        tipo: "sms"
+        destinatario: "+573001112233"
+        mensaje: "Se ha creado una nueva solicitud en la Registraduría General de la Nación para firmar su documento de identidad CC*******7890"
+    Carpeta:
+      required:
+      - ciudadanoId
+      - fechaCreacion
+      - id
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          type: string
+        ciudadanoId:
+          maxLength: 36
+          type: string
+        fechaCreacion:
+          type: string
+          format: date
+        documentos:
+          type: array
+          items:
+            $ref: "#/components/schemas/Documento"
+      example:
+        documentos:
+        - tipo: tipo
+          estado: certificado
+          entidadEmisoraId: entidadEmisoraId
+          metadatos:
+          - clave: clave
+            valor: valor
+          - clave: clave
+            valor: valor
+          fechaEmision: 2000-01-23
+          id: id
+        - tipo: tipo
+          estado: certificado
+          entidadEmisoraId: entidadEmisoraId
+          metadatos:
+          - clave: clave
+            valor: valor
+          - clave: clave
+            valor: valor
+          fechaEmision: 2000-01-23
+          id: id
+        fechaCreacion: 2000-01-23
+        id: id
+        ciudadanoId: ciudadanoId
+    Documento:
+      required:
+      - entidadEmisoraId
+      - estado
+      - fechaEmision
+      - id
+      - tipo
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          type: string
+        tipo:
+          maxLength: 50
+          type: string
+        estado:
+          type: string
+          enum:
+          - certificado
+          - temporal
+        fechaEmision:
+          type: string
+          format: date
+        entidadEmisoraId:
+          maxLength: 36
+          type: string
+        URL:
+          maxLength: 1000
+          type: string
+        metadatos:
+          type: array
+          items:
+            $ref: "#/components/schemas/Metadato"
+        firmaDigital:
+          $ref: "#/components/schemas/FirmaDigital"
+      example:
+        tipo: tipo
+        estado: certificado
+        entidadEmisoraId: entidadEmisoraId
+        metadatos:
+        - clave: clave
+          valor: valor
+        - clave: clave
+          valor: valor
+        fechaEmision: 2000-01-23
+        id: id
+    Metadato:
+      required:
+      - clave
+      - valor
+      type: object
+      properties:
+        clave:
+          maxLength: 50
+          type: string
+        valor:
+          maxLength: 255
+          type: string
+      example:
+        clave: clave
+        valor: valor
+    FirmaDigital:
+      required:
+      - algoritmo
+      - valor
+      - fechaFirma
+      - firmante
+      - certificado
+      type: object
+      properties:
+        algoritmo:
+          maxLength: 50
+          type: string
+        valor:
+          type: string
+          description: Firma codificada (ej. base64)
+        fechaFirma:
+          type: string
+          format: date-time
+        firmante:
+          type: object
+          required:
+            - id
+            - nombre
+          properties:
+            id:
+              maxLength: 36
+              type: string
+            nombre:
+              maxLength: 100
+              type: string
+            cargo:
+              maxLength: 100
+              type: string
+        certificado:
+          type: object
+          required:
+            - emisor
+            - numeroSerie
+            - validoDesde
+            - validoHasta
+          properties:
+            emisor:
+              maxLength: 100
+              type: string
+            numeroSerie:
+              maxLength: 50
+              type: string
+            validoDesde:
+              type: string
+              format: date-time
+            validoHasta:
+              type: string
+              format: date-time
+      example:
+        algoritmo: SHA256
+        valor: firma_digital_hash_base64
+        fechaFirma: 2023-01-01T00:00:00Z
+        firmante:
+          id: firmante-001
+          nombre: Juan Pérez
+          cargo: Funcionario Registraduría
+        certificado:
+          emisor: AC Registraduría Nacional
+          numeroSerie: RN-2023-001
+          validoDesde: 2023-01-01T00:00:00Z
+          validoHasta: 2024-01-01T00:00:00Z
+    Operador:
+      required:
+      - id
+      - nombre
+      - tipo
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          type: string
+        nombre:
+          maxLength: 100
+          type: string
+        tipo:
+          type: string
+          enum:
+          - publico
+          - privado
+    EntidadEmisora:
+      required:
+      - id
+      - nombre
+      - sector
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          type: string
+        nombre:
+          maxLength: 100
+          type: string
+        sector:
+          maxLength: 50
+          type: string
+    Solicitud:
+      required:
+      - ciudadanoId
+      - documentosSolicitados
+      - estado
+      - id
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          type: string
+        ciudadanoId:
+          maxLength: 36
+          type: string
+        documentosSolicitados:
+          type: array
+          items:
+            maxLength: 36
+            type: string
+        estado:
+          type: string
+          enum:
+          - pendiente
+          - completada
+    Notificacion:
+      required:
+      - destinatario
+      - id
+      - mensaje
+      - tipo
+      type: object
+      properties:
+        id:
+          maxLength: 36
+          type: string
+        tipo:
+          type: string
+          enum:
+          - email
+          - sms
+        destinatario:
+          maxLength: 100
+          type: string
+        mensaje:
+          maxLength: 500
+          type: string
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+      xml:
+        name: "##default"
+    Error:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+  requestBodies:
+    Pet:
+      description: Carpeta que necesita ser agregada la cuenta de un ciudadano.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Carpeta"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Carpeta"
+  securitySchemes:
+    carpeta_ciudadana_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://grupo2-arti4212-uniandes.io/oauth/authorize
+          scopes:
+            write:carpeta: Modificar las carpetas de los ciudadanos
+            read:carpeta: Leer las carpetas de los ciudadanos
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

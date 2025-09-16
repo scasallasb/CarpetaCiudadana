@@ -1,0 +1,597 @@
+{
+  "info": {
+    "name": "Carpeta Ciudadana – Registro (canónico, alineado OpenAPI)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Dominio: Carpeta Ciudadana (Operador)",
+      "item": [
+        {
+          "name": "Crear carpeta (POST /carpeta)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/carpeta",
+              "host": [
+                "{{base_url}}/carpeta"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Ciudadano\": {\n    \"nombre\": \"Juan Pérez\",\n    \"correoCarpeta\": \"juan.perez@carpeta.gov.co\",\n    \"tipoIdentificacion\": \"CC\",\n    \"numeroIdentificacion\": \"1234567890\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Obtener carpeta por ciudadano (GET /ciudadano/{id}/carpeta)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/ciudadano/{{ciudadanoId}}/carpeta",
+              "host": [
+                "{{base_url}}/ciudadano/{{ciudadanoId}}/carpeta"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Registrar documento en carpeta (POST /documento)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/documento",
+              "host": [
+                "{{base_url}}/documento"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Documento\": {\n    \"id\": \"doc-cedula-uuid-1234\",\n    \"tipo\": \"cedula_digital\",\n    \"estado\": \"certificado\",\n    \"carpetaId\": \"carp-1234\",\n    \"entidadEmisoraId\": \"reg-0001\",\n    \"fechaEmision\": \"2025-09-12\",\n    \"URL\": \"https://repositorio-documentos.gov.co/documentos/doc-cedula-uuid-1234.pdf\",\n    \"metadatos\": [\n      {\n        \"clave\": \"ftpPath\",\n        \"valor\": \"/out/cedula_uuid-1234.pdf\"\n      },\n      {\n        \"clave\": \"procesado\",\n        \"valor\": \"true\"\n      }\n    ],\n    \"firmaDigital\": {\n      \"algoritmo\": \"SHA256\",\n      \"valor\": \"firma_uuid-1234_1757896000_base64\",\n      \"fechaFirma\": \"2025-09-12T10:00:00Z\",\n      \"firmante\": {\n        \"id\": \"firmante-001\",\n        \"nombre\": \"Sistema Registraduría\",\n        \"cargo\": \"Funcionario Autorizado\"\n      },\n      \"certificado\": {\n        \"emisor\": \"AC Registraduría Nacional\",\n        \"numeroSerie\": \"RN-2023-001\",\n        \"validoDesde\": \"2025-09-12T10:00:00Z\",\n        \"validoHasta\": \"2026-09-12T10:00:00Z\"\n      }\n    }\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Consultar carpeta (GET /carpeta/{id})",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/carpeta/{{carpetaId}}",
+              "host": [
+                "{{base_url}}/carpeta/{{carpetaId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar documentos de carpeta (GET /carpeta/{id}/documentos)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/carpeta/{{carpetaId}}/documentos",
+              "host": [
+                "{{base_url}}/carpeta/{{carpetaId}}/documentos"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar ciudadanos por operador (GET /operador/{id}/ciudadanos)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/operador/{{operadorId}}/ciudadanos",
+              "host": [
+                "{{base_url}}/operador/{{operadorId}}/ciudadanos"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar ciudadanos (GET /ciudadano/listar)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/ciudadano/listar",
+              "host": [
+                "{{base_url}}/ciudadano/listar"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dominio: Notificaciones (Carpeta Ciudadana)",
+      "item": [
+        {
+          "name": "Notificar a MinTIC (POST /notificaciones/minTIC)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notificaciones/minTIC",
+              "host": [
+                "{{base_url}}/notificaciones/minTIC"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Ciudadano\": {\n    \"id\": \"{{ciudadanoId}}\",\n    \"nombre\": \"Juan Pérez\",\n    \"correoCarpeta\": \"juan.perez@carpeta.gov.co\",\n    \"operadorId\": \"{{operadorId}}\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Notificar a Usuario (POST /notificaciones/usuario)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notificaciones/usuario",
+              "host": [
+                "{{base_url}}/notificaciones/usuario"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Notificacion\": {\n    \"id\": \"noti-{{ciudadanoId}}\",\n    \"tipo\": \"email\",\n    \"destinatario\": \"juan.perez@carpeta.gov.co\",\n    \"mensaje\": \"Su carpeta ha sido creada y se encuentra activa.\"\n  }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dominio: Registraduría (Identidad + FTP)",
+      "item": [
+        {
+          "name": "Verificar identidad (POST /identidad/verify)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{host_registraduria}}/identidad/verify",
+              "host": [
+                "{{host_registraduria}}/identidad/verify"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ciudadanoId\": \"{{ciudadanoId}}\",\n  \"tipoIdentificacion\": \"CC\",\n  \"numeroIdentificacion\": \"1234567890\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Solicitar firma de documento (POST /documento/solicitar-firma)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{host_registraduria}}/documento/solicitar-firma",
+              "host": [
+                "{{host_registraduria}}/documento/solicitar-firma"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Solicitud\": {\n    \"id\": \"sol-789\",\n    \"ciudadanoId\": \"{{ciudadanoId}}\",\n    \"documentosSolicitados\": [\"CC1234567890\"],\n    \"estado\": \"pendiente\"\n  },\n  \"Notificacion\": {\n    \"tipo\": \"sms\",\n    \"destinatario\": \"+573001112233\",\n    \"mensaje\": \"Se ha creado una nueva solicitud en la Registraduría General de la Nación para firmar su documento de identidad CC*******7890\"\n  }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dominio: MinTIC (Alta ciudadano-operador)",
+      "item": [
+        {
+          "name": "Notificar alta de ciudadano (POST /ciudadanos)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{host_mintic}}/ciudadanos",
+              "host": [
+                "{{host_mintic}}/ciudadanos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ciudadanoId\": \"{{ciudadanoId}}\",\n  \"operadorId\": \"{{operadorId}}\",\n  \"correo\": \"juan.perez@carpeta.gov.co\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dominio: Notificador",
+      "item": [
+        {
+          "name": "Enviar email de confirmación",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{host_notificador}}/email",
+              "host": [
+                "{{host_notificador}}/email"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"juan.perez@carpeta.gov.co\",\n  \"subject\": \"Carpeta creada\",\n  \"body\": \"Su carpeta está activa.\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orquestación del Flujo Registro",
+      "item": [
+        {
+          "name": "1) Verificar identidad",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{host_registraduria}}/identidad/verify",
+              "host": [
+                "{{host_registraduria}}/identidad/verify"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ciudadanoId\": \"{{ciudadanoId}}\",\n  \"tipoIdentificacion\": \"CC\",\n  \"numeroIdentificacion\": \"1234567890\"\n}"
+            }
+          }
+        },
+        {
+          "name": "2) Crear carpeta (OpenAPI)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/carpeta/{{carpetaId}}",
+              "host": [
+                "{{base_url}}/carpeta/{{carpetaId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Carpeta\": {\n    \"id\": \"carp-1234\",\n    \"ciudadanoId\": \"uuid-1234\",\n    \"operadorId\": \"op-micarpeta-001\",\n    \"estado\": \"activa\",\n    \"fechaCreacion\": \"2025-09-12\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "3) (Carpeta Ciudadana) Notificar a MinTIC",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notificaciones/minTIC",
+              "host": [
+                "{{base_url}}/notificaciones/minTIC"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Ciudadano\": {\n    \"id\": \"{{ciudadanoId}}\",\n    \"nombre\": \"Juan Pérez\",\n    \"correoCarpeta\": \"juan.perez@carpeta.gov.co\",\n    \"operadorId\": \"{{operadorId}}\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "4) (Registraduría) Simular FTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{host_registraduria}}/ftp/simular-upload",
+              "host": [
+                "{{host_registraduria}}/ftp/simular-upload"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ftpHost\": \"{{ftp_host}}\",\n  \"ftpUser\": \"{{ftp_user}}\",\n  \"ftpPass\": \"{{ftp_pass}}\",\n  \"path\": \"{{ftp_path}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "5) (ESB->MiCarpeta) Registrar documento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/documento",
+              "host": [
+                "{{base_url}}/documento"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Documento\": {\n    \"id\": \"doc-cedula-uuid-1234\",\n    \"tipo\": \"cedula_digital\",\n    \"estado\": \"certificado\",\n    \"carpetaId\": \"carp-1234\",\n    \"entidadEmisoraId\": \"reg-0001\",\n    \"fechaEmision\": \"2025-09-12\",\n    \"URL\": \"https://repositorio-documentos.gov.co/documentos/doc-cedula-uuid-1234.pdf\",\n    \"metadatos\": [\n      {\n        \"clave\": \"ftpPath\",\n        \"valor\": \"/out/cedula_uuid-1234.pdf\"\n      },\n      {\n        \"clave\": \"procesado\",\n        \"valor\": \"true\"\n      }\n    ],\n    \"firmaDigital\": {\n      \"algoritmo\": \"SHA256\",\n      \"valor\": \"firma_uuid-1234_1757896000_base64\",\n      \"fechaFirma\": \"2025-09-12T10:00:00Z\",\n      \"firmante\": {\n        \"id\": \"firmante-001\",\n        \"nombre\": \"Sistema Registraduría\",\n        \"cargo\": \"Funcionario Autorizado\"\n      },\n      \"certificado\": {\n        \"emisor\": \"AC Registraduría Nacional\",\n        \"numeroSerie\": \"RN-2023-001\",\n        \"validoDesde\": \"2025-09-12T10:00:00Z\",\n        \"validoHasta\": \"2026-09-12T10:00:00Z\"\n      }\n    }\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "6) (Carpeta Ciudadana) Notificar al ciudadano",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notificaciones/usuario",
+              "host": [
+                "{{base_url}}/notificaciones/usuario"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Notificacion\": {\n    \"id\": \"noti-{{ciudadanoId}}\",\n    \"tipo\": \"email\",\n    \"destinatario\": \"juan.perez@carpeta.gov.co\",\n    \"mensaje\": \"Su carpeta ha sido creada y se encuentra activa.\"\n  }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pruebas Directas (Sin Kong) - Servicios Disponibles",
+      "item": [
+        {
+          "name": "MinTIC - Probar servicio directo",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{host_mintic_direct}}/health",
+              "host": [
+                "{{host_mintic_direct}}/health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "MinTIC - Crear ciudadano (directo)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{host_mintic_direct}}/ciudadanos",
+              "host": [
+                "{{host_mintic_direct}}/ciudadanos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ciudadanoId\": \"{{ciudadanoId}}\",\n  \"operadorId\": \"{{operadorId}}\",\n  \"correo\": \"juan.perez@carpeta.gov.co\",\n  \"nombre\": \"Juan Pérez\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Kong - Verificar estado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8001/status",
+              "host": [
+                "http://localhost:8001/status"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Kong - Listar servicios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8001/services",
+              "host": [
+                "http://localhost:8001/services"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Kong - Listar rutas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8001/routes",
+              "host": [
+                "http://localhost:8001/routes"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/micarpeta/api/v1"
+    },
+    {
+      "key": "base_url_direct",
+      "value": "http://localhost:3000/api/v1"
+    },
+    {
+      "key": "host_registraduria",
+      "value": "http://localhost:8000/registraduria/api/v1"
+    },
+    {
+      "key": "host_registraduria_direct",
+      "value": "http://localhost:3001/api/v1"
+    },
+    {
+      "key": "host_mintic",
+      "value": "http://localhost:8000/mintic/api/v1"
+    },
+    {
+      "key": "host_mintic_direct",
+      "value": "http://localhost:3002/api/v1"
+    },
+    {
+      "key": "host_notificador",
+      "value": "http://localhost:8000/notificador/api/v1"
+    },
+    {
+      "key": "host_notificador_direct",
+      "value": "http://localhost:3003/api/v1"
+    },
+    {
+      "key": "ciudadanoId",
+      "value": "uuid-1234"
+    },
+    {
+      "key": "carpetaId",
+      "value": "carp-1234"
+    },
+    {
+      "key": "operadorId",
+      "value": "op-micarpeta-001"
+    },
+    {
+      "key": "ftp_host",
+      "value": "localhost"
+    },
+    {
+      "key": "ftp_user",
+      "value": "registraduria"
+    },
+    {
+      "key": "ftp_pass",
+      "value": "registraduria123"
+    },
+    {
+      "key": "ftp_path",
+      "value": "/out/cedula_{{ciudadanoId}}.pdf"
+    }
+  ]
+}

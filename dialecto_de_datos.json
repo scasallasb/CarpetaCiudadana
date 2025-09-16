@@ -1,0 +1,195 @@
+{ 
+
+  $schema httpsjson-schema.orgdraft2020-12schema, 
+
+  $id httpsexample.comcarpeta-ciudadana.schema.json, 
+
+  title Modelo Canónico Carpeta Ciudadana, 
+
+  type object, 
+
+  properties { 
+
+    Ciudadano { 
+
+      type object, 
+
+      properties { 
+
+        id { type string, maxLength 36 }, 
+
+        nombre { type string, maxLength 100 }, 
+
+        correoCarpeta { type string, format email, maxLength 100 }, 
+
+        operadorId { type string, maxLength 36 } 
+
+      }, 
+
+      required [id, nombre, correoCarpeta, operadorId] 
+
+    }, 
+
+    Carpeta { 
+
+      type object, 
+
+      properties { 
+
+        id { type string, maxLength 36 }, 
+
+        ciudadanoId { type string, maxLength 36 }, 
+
+        fechaCreacion { type string, format date }, 
+
+        documentos { 
+
+          type array, 
+
+          items { $ref #$defsDocumento } 
+
+        } 
+
+      }, 
+
+      required [id, ciudadanoId, fechaCreacion] 
+
+    }, 
+
+    Operador { 
+
+      type object, 
+
+      properties { 
+
+        id { type string, maxLength 36 }, 
+
+        nombre { type string, maxLength 100 }, 
+
+        tipo { type string, enum [publico, privado] } 
+
+      }, 
+
+      required [id, nombre, tipo] 
+
+    }, 
+
+    EntidadEmisora { 
+
+      type object, 
+
+      properties { 
+
+        id { type string, maxLength 36 }, 
+
+        nombre { type string, maxLength 100 }, 
+
+        sector { type string, maxLength 50 } 
+
+      }, 
+
+      required [id, nombre, sector] 
+
+    }, 
+
+    Solicitud { 
+
+      type object, 
+
+      properties { 
+
+        id { type string, maxLength 36 }, 
+
+        ciudadanoId { type string, maxLength 36 }, 
+
+        documentosSolicitados { 
+
+          type array, 
+
+          items { type string, maxLength 36 } 
+
+        }, 
+
+        estado { type string, enum [pendiente, completada] } 
+
+      }, 
+
+      required [id, ciudadanoId, documentosSolicitados, estado] 
+
+    }, 
+
+    Notificacion { 
+
+      type object, 
+
+      properties { 
+
+        id { type string, maxLength 36 }, 
+
+        tipo { type string, enum [email, sms] }, 
+
+        destinatario { type string, maxLength 100 }, 
+
+        mensaje { type string, maxLength 500 } 
+
+      }, 
+
+      required [id, tipo, destinatario, mensaje] 
+
+    } 
+
+  }, 
+
+  $defs { 
+
+    Documento { 
+
+      type object, 
+
+      properties { 
+
+        id { type string, maxLength 36 }, 
+
+        tipo { type string, maxLength 50 }, 
+
+        estado { type string, enum [certificado, temporal] }, 
+
+        fechaEmision { type string, format date }, 
+
+        entidadEmisoraId { type string, maxLength 36 }, 
+
+        metadatos { 
+
+          type array, 
+
+          items { $ref #$defsMetadato } 
+
+        } 
+
+      }, 
+
+      required [id, tipo, estado, fechaEmision, entidadEmisoraId] 
+
+    }, 
+
+    Metadato { 
+
+      type object, 
+
+      properties { 
+
+        clave { type string, maxLength 50 }, 
+
+        valor { type string, maxLength 255 } 
+
+      }, 
+
+      required [clave, valor] 
+
+    } 
+
+  }, 
+
+  required [Ciudadano, Carpeta] 
+
+} 

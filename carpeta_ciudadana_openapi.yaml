@@ -1,0 +1,475 @@
+openapi: 3.0.4
+info:
+  title: Carpeta Ciudadana
+  version: 1.0.0
+  description: |-
+    Modelo canónico para interoperabilidad de servicios ciudadanos
+  contact:
+    email: grupo2.arti@uniandes.edu.co
+servers:
+  - url: https://grupo2.arti.uniandes.io/api/v1
+tags:
+  - name: ciudadano
+    description: Operaciones acerca de un ciudadano
+  - name: carpeta
+    description: Operaciones sobre las carpetas de los ciudadanos.
+  - name: documento
+    description: Documentos asociados a los ciudadanos.
+  - name: operador
+    description: Entidad a la que un ciudadano se puede registrar.
+paths:
+  /ciudadano/listar:
+    get:
+      tags:
+        - ciudadano
+      summary: Listar ciudadanos
+      description: Lista de ciudadanos
+      operationId: ciudadanoLista
+      responses:
+        '200':
+          description: Operacion Exitosa
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ciudadano'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+                
+  /ciudadano/{id}/carpeta:
+    get:
+      tags:
+        - ciudadano
+      summary: Obtener la carpeta de un ciudadano
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            maxLength: 36
+      responses:
+        '200':
+          description: Carpeta encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Carpeta'
+  /carpeta/{id}:
+    put:
+      tags:
+        - carpeta
+      summary: Actualizar una carpeta existente.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            maxLength: 36
+      description: Actulizar una carpeta existente por su ID
+      operationId: updateCarpeta
+      requestBody:
+        description: Actulizar una carpeta existente por su ID
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Carpeta'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Carpeta'
+        required: true
+      responses:
+        '200':
+          description: Operacion exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Carpeta'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Carpeta'
+        '400':
+          description: ID invalido
+        '404':
+          description: Carpeta no encontrada
+        '422':
+          description: Error en la validacion
+        default:
+          description: Error inesperado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - carpeta_ciudadana_auth:
+            - write:carpetas
+            - read:carpetas 
+    post:
+      tags:
+        - carpeta
+      summary: Agrega una carpeta
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            maxLength: 36
+      description: Agrega una carpeta 
+      operationId: addCarpeta
+      requestBody:
+        description: Crea una nueva carpeta al ciudadano
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Carpeta'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Carpeta'
+        required: true
+      responses:
+        '200':
+          description: Operacion exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Carpeta'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Carpeta'
+        '400':
+          description: Informacion incorrecta
+        '422':
+          description: Error en la validacion
+        default:
+          description: Error inesperado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - carpeta_ciudadana_auth:
+            - write:carpetas
+            - read:carpetas
+    get:
+      tags:
+        - carpeta
+      summary: Buscar carpeta por su ID
+      description: Retorna un carpeta basado en un ID.
+      operationId: getCarpetaId
+      parameters:
+      - name: id
+        in: path
+        description: ID de la carpeta a retornar
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Carpeta encontrada
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Carpeta'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /carpeta/{id}/documentos:
+    get:
+      tags:
+        - carpeta
+      summary: Listar documentos de una carpeta
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            maxLength: 36
+      responses:
+        '200':
+          description: Lista de documentos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Documento'              
+                
+  /documento:
+    post:
+      tags:
+          - documento
+      summary: Registrar documento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Documento'
+      responses:
+        '201':
+          description: Documento creado
+  
+  /operador/{id}/ciudadanos:
+    get:
+      tags:
+          - operador
+      summary: Listar ciudadanos afiliados a un operador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            maxLength: 36
+      responses:
+        '200':
+          description: Lista de ciudadanos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ciudadano'     
+components:
+  schemas:
+    Ciudadano:
+      type: object
+      required: [id, nombre, correoCarpeta, operadorId]
+      properties:
+        id:
+          type: string
+          maxLength: 36
+        nombre:
+          type: string
+          maxLength: 100
+        correoCarpeta:
+          type: string
+          format: email
+          maxLength: 100
+        operadorId:
+          type: string
+          maxLength: 36
+
+    Carpeta:
+      type: object
+      required: [id, ciudadanoId, fechaCreacion]
+      properties:
+        id:
+          type: string
+          maxLength: 36
+        ciudadanoId:
+          type: string
+          maxLength: 36
+        fechaCreacion:
+          type: string
+          format: date
+        documentos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Documento'
+
+    Documento:
+      type: object
+      required: [id, tipo, estado, fechaEmision, entidadEmisoraId]
+      properties:
+        id:
+          type: string
+          maxLength: 36
+        tipo:
+          type: string
+          maxLength: 50
+        estado:
+          type: string
+          enum: [certificado, temporal]
+        fechaEmision:
+          type: string
+          format: date
+        entidadEmisoraId:
+          type: string
+          maxLength: 36
+        URL:
+          type: string
+          maxLength: 1000
+        metadatos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metadato'
+        firmaDigital:
+          $ref: '#/components/schemas/FirmaDigital'
+
+    Metadato:
+      type: object
+      required: [clave, valor]
+      properties:
+        clave:
+          type: string
+          maxLength: 50
+        valor:
+          type: string
+          maxLength: 255
+
+    FirmaDigital:
+      type: object
+      required: [algoritmo, valor, fechaFirma, firmante, certificado]
+      properties:
+        algoritmo:
+          type: string
+          maxLength: 50
+        valor:
+          type: string
+          description: Firma codificada (ej. base64)
+        fechaFirma:
+          type: string
+          format: date-time
+        firmante:
+          type: object
+          required: [id, nombre]
+          properties:
+            id:
+              type: string
+              maxLength: 36
+            nombre:
+              type: string
+              maxLength: 100
+            cargo:
+              type: string
+              maxLength: 100
+        certificado:
+          type: object
+          required: [emisor, numeroSerie, validoDesde, validoHasta]
+          properties:
+            emisor:
+              type: string
+              maxLength: 100
+            numeroSerie:
+              type: string
+              maxLength: 50
+            validoDesde:
+              type: string
+              format: date-time
+            validoHasta:
+              type: string
+              format: date-time
+
+    Operador:
+      type: object
+      required: [id, nombre, tipo]
+      properties:
+        id:
+          type: string
+          maxLength: 36
+        nombre:
+          type: string
+          maxLength: 100
+        tipo:
+          type: string
+          enum: [publico, privado]
+
+    EntidadEmisora:
+      type: object
+      required: [id, nombre, sector]
+      properties:
+        id:
+          type: string
+          maxLength: 36
+        nombre:
+          type: string
+          maxLength: 100
+        sector:
+          type: string
+          maxLength: 50
+
+    Solicitud:
+      type: object
+      required: [id, ciudadanoId, documentosSolicitados, estado]
+      properties:
+        id:
+          type: string
+          maxLength: 36
+        ciudadanoId:
+          type: string
+          maxLength: 36
+        documentosSolicitados:
+          type: array
+          items:
+            type: string
+            maxLength: 36
+        estado:
+          type: string
+          enum: [pendiente, completada]
+
+    Notificacion:
+      type: object
+      required: [id, tipo, destinatario, mensaje]
+      properties:
+        id:
+          type: string
+          maxLength: 36
+        tipo:
+          type: string
+          enum: [email, sms]
+        destinatario:
+          type: string
+          maxLength: 100
+        mensaje:
+          type: string
+          maxLength: 500    
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+      xml:
+        name: '##default'
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+  requestBodies:
+    Pet:
+      description: Carpeta que necesita ser agregada la cuenta de un ciudadano.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Carpeta'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Carpeta'
+  securitySchemes:
+    carpeta_ciudadana_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://group2.arti.io/oauth/authorize
+          scopes:
+            "write:carpeta": Modificar las carpetas de los ciudadanos
+            "read:carpeta": Leer las carpetas de los ciudadanos        
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
