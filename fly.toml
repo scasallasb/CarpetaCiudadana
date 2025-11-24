@@ -1,10 +1,15 @@
-app = "cc-ms-app"
+app = "carpetaciudadana-arq-int"
 
 [build]
   dockerfile = "Dockerfile"
 
 [env]
   PORT = "3000"
+  NODE_ENV = "production"
+  # Configura estas variables en fly.io con: fly secrets set KAFKA_BROKER=tu-broker
+  # KAFKA_BROKER = "tu-kafka-broker:9092"
+  # NOTIFICADOR_URL = "http://tu-notificador:3003"
+  # MINTIC_URL = "http://tu-mintic:3002"
 
 [[services]]
   internal_port = 3000
@@ -13,3 +18,21 @@ app = "cc-ms-app"
   [[services.ports]]
     port = 80
     handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [services.concurrency]
+    type = "requests"
+    hard_limit = 25
+    soft_limit = 20
+
+  [[services.http_checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/api/v1/ciudadano/listar"
+    protocol = "http"

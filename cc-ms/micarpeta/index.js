@@ -15,6 +15,7 @@ const BASE = '/api/v1';
 module.exports = { app, PORT, BASE };
 
 const axios = require('axios');
+const { executeWithFallback } = require('./utils/errorHandler');
 
 // Kafka configuration
 const kafka = new Kafka({
@@ -197,25 +198,89 @@ app.get(`${BASE}/ciudadano/listar`, (_req,res)=>{
 app.post(`${BASE}/notificaciones/minTIC`, async (req,res)=>{
   const ciudadano = req.body?.Ciudadano;
   if(!ciudadano?.id || !ciudadano?.operadorId) return res.status(400).json({error:'Ciudadano.id y operadorId requeridos'});
-  try{
-    const minticUrl = process.env.MINTIC_URL || 'http://mintic:3002';
-    await axios.post(`${minticUrl}/api/v1/ciudadanos`, { ciudadanoId: ciudadano.id, operadorId: ciudadano.operadorId, correo: ciudadano.correoCarpeta||''});
-    ensureSet(operadorToCiudadanos, ciudadano.operadorId).add(ciudadano.id);
-    res.status(202).json({status:'enviado-a-mintic'});
-  }catch(e){
-    res.status(502).json({error:'fallo notificando a MinTIC', detail: e.message});
+  
+  try {
+    const result = await executeWithFallback(
+      'mintic',
+      { ciudadanoId: ciudadano.id, operadorId: ciudadano.operadorId, correo: ciudadano.correoCarpeta || '' },
+      async () => {
+        const minticUrl = process.env.MINTIC_URL || 'http://mintic:3002';
+        await axios.post(`${minticUrl}/api/v1/ciudadanos`, { 
+          ciudadanoId: ciudadano.id, 
+          operadorId: ciudadano.operadorId, 
+          correo: ciudadano.correoCarpeta || ''
+        }, {
+          timeout: 5000
+        });
+        ensureSet(operadorToCiudadanos, ciudadano.operadorId).add(ciudadano.id);
+        return { status: 'enviado-a-mintic', mock: false };
+      },
+      {
+        enableIdempotency: true,
+        enableMock: true,
+        timeout: 5000
+      }
+    );
+    
+    // Siempre responder 202 Accepted (idempotencia)
+    res.status(202).json(result.mock ? {
+      status: 'enviado-a-mintic',
+      mock: true,
+      mensaje: 'Notificación a MinTIC procesada en modo mock debido a fallo del servicio'
+    } : result);
+    
+  } catch (error) {
+    // Fallback final - siempre responder exitosamente
+    console.error('[Error crítico] Fallo en notificación a MinTIC:', error);
+    res.status(202).json({
+      status: 'enviado-a-mintic',
+      mock: true,
+      mensaje: 'Notificación a MinTIC procesada en modo mock debido a error crítico'
+    });
   }
 });
 
 app.post(`${BASE}/notificaciones/usuario`, async (req,res)=>{
   const noti = req.body?.Notificacion;
   if(!noti?.tipo || !noti?.destinatario) return res.status(400).json({error:'Notificacion.tipo y destinatario requeridos'});
-  try{
-    const notifUrl = process.env.NOTIFICADOR_URL || 'http://notificador:3003';
-    await axios.post(`${notifUrl}/api/v1/email`, { to: noti.destinatario, subject: 'Carpeta creada', body: noti.mensaje || 'Su carpeta está activa.'});
-    res.status(202).json({status:'notificado-usuario'});
-  }catch(e){
-    res.status(502).json({error:'fallo notificando al usuario', detail:e.message});
+  
+  try {
+    const result = await executeWithFallback(
+      'email',
+      { to: noti.destinatario, subject: 'Carpeta creada', body: noti.mensaje || 'Su carpeta está activa.' },
+      async () => {
+        const notifUrl = process.env.NOTIFICADOR_URL || 'http://notificador:3003';
+        await axios.post(`${notifUrl}/api/v1/email`, { 
+          to: noti.destinatario, 
+          subject: 'Carpeta creada', 
+          body: noti.mensaje || 'Su carpeta está activa.'
+        }, {
+          timeout: 5000
+        });
+        return { status: 'notificado-usuario', mock: false };
+      },
+      {
+        enableIdempotency: true,
+        enableMock: true,
+        timeout: 5000
+      }
+    );
+    
+    // Siempre responder 202 Accepted (idempotencia)
+    res.status(202).json(result.mock ? {
+      status: 'notificado-usuario',
+      mock: true,
+      mensaje: 'Notificación al usuario procesada en modo mock debido a fallo del servicio'
+    } : result);
+    
+  } catch (error) {
+    // Fallback final - siempre responder exitosamente
+    console.error('[Error crítico] Fallo en notificación al usuario:', error);
+    res.status(202).json({
+      status: 'notificado-usuario',
+      mock: true,
+      mensaje: 'Notificación al usuario procesada en modo mock debido a error crítico'
+    });
   }
 });
 

@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "Carpeta Ciudadana – Registro (Local y Fly.io)",
+    "name": "Carpeta Ciudadana – Registro (Fly.io)",
     "description": "Colección para probar endpoints en local y en producción (fly.io).\n\nPara cambiar entre local y producción:\n1. Ve a Variables de la colección\n2. Cambia 'base_url' entre:\n   - Local: http://localhost:8000/micarpeta/api/v1\n   - Fly.io: https://carpetaciudadana-arq-int.fly.dev/api/v1\n\nNota: Los otros servicios (registraduria, notificador, mintic) solo están disponibles en local por ahora.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -542,43 +542,43 @@
     },
     {
       "key": "base_url_direct",
-      "value": "http://localhost:3000/api/v1",
+      "value": "https://carpetaciudadana-arq-int.fly.dev/api/v1",
       "type": "string",
       "description": "URL directa local (sin Kong)"
     },
     {
       "key": "host_registraduria",
-      "value": "http://localhost:8000/registraduria/api/v1",
+      "value": "https://carpetaciudadana-arq-int.fly.dev/registraduria/api/v1",
       "type": "string",
       "description": "Solo disponible en local"
     },
     {
       "key": "host_registraduria_direct",
-      "value": "http://localhost:3001/api/v1",
+      "value": "https://carpetaciudadana-arq-int.fly.dev/api/v1",
       "type": "string",
       "description": "Solo disponible en local"
     },
     {
       "key": "host_mintic",
-      "value": "http://localhost:8000/mintic/api/v1",
+      "value": "https://carpetaciudadana-arq-int.fly.dev/mintic/api/v1",
       "type": "string",
       "description": "Solo disponible en local"
     },
     {
       "key": "host_mintic_direct",
-      "value": "http://localhost:3002/api/v1",
+      "value": "https://carpetaciudadana-arq-int.fly.dev/api/v1",
       "type": "string",
       "description": "Solo disponible en local"
     },
     {
       "key": "host_notificador",
-      "value": "http://localhost:8000/notificador/api/v1",
+      "value": "https://carpetaciudadana-arq-int.fly.dev/notificador/api/v1",
       "type": "string",
       "description": "Solo disponible en local"
     },
     {
       "key": "host_notificador_direct",
-      "value": "http://localhost:3003/api/v1",
+      "value": "https://carpetaciudadana-arq-int.fly.dev/api/v1",
       "type": "string",
       "description": "Solo disponible en local"
     },
