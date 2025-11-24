@@ -1,7 +1,7 @@
 {
   "name": "notificador",
   "version": "1.0.0",
-  "description": "Modelo can\u00f3nico para interoperabilidad de servicios ciudadanos",
+  "description": "Modelo canónico para interoperabilidad de servicios ciudadanos",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
