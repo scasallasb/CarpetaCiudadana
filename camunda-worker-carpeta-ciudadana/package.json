@@ -1,0 +1,19 @@
+{
+  "name": "camunda-worker-carpeta",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node worker.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@camunda8/sdk": "^8.8.3",
+    "axios": "^1.13.2",
+    "dotenv": "^17.2.3"
+  }
+
+}
